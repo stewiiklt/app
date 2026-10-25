@@ -1,0 +1,27 @@
+import { Link, type Href } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { AppText, Avatar, Surface } from '../../src/components';
+import { DemoBanner } from '../../src/components/DemoBanner';
+import { useDemo } from '../../src/demo/DemoContext';
+import { demoPosts } from '../../src/demo/data';
+import type { UserProfile } from '../../src/api/types';
+import { colors, radii, spacing } from '../../src/theme/tokens';
+
+export default function ProfileScreen() {
+  const { persona, personas, setPersona, city, cities, mode, api, savedIds } = useDemo();
+  const [profile,setProfile]=useState<UserProfile|null>(null); const [error,setError]=useState('');
+  useEffect(()=>{if(mode==='api'&&api)void api.me().then(setProfile).catch(()=>setError('Profile details could not be loaded.'));},[mode,api,persona]);
+  const name=profile?.displayName??persona.name; const initials=persona.initials;
+  const ownPosts=mode==='fixtures'?demoPosts.filter(p=>p.name===persona.name):[];
+  return <ScrollView style={styles.page} contentContainerStyle={styles.content}><View style={styles.shell}>
+    <View style={styles.header}><View><AppText variant="caption" muted>YOUR FOODIE CARD</AppText><AppText variant="display">Your profile</AppText></View><Link href={'/notifications' as Href} asChild><Pressable style={styles.bell}><AppText>♧</AppText></Pressable></Link></View><DemoBanner />
+    <Surface style={styles.profileCard}><Avatar name={name} size={76}/><AppText variant="title">{name}</AppText><AppText variant="bodySmall" muted>{profile?.cityName??city.name} · Always up for trying the special</AppText><View style={styles.stats}><View><AppText variant="subtitle">{profile?.reviewCount??ownPosts.length}</AppText><AppText variant="caption" muted>reviews</AppText></View><View><AppText variant="subtitle">{profile?.followingCount??0}</AppText><AppText variant="caption" muted>following</AppText></View><View><AppText variant="subtitle">{savedIds.length}</AppText><AppText variant="caption" muted>saved</AppText></View></View><AppText variant="bodySmall" style={styles.bio}>{profile?.bio??'Collecting favorite bites and sharing them with my people.'}</AppText></Surface>
+    {error?<Surface tone="cream"><AppText variant="caption" muted>{error}</AppText></Surface>:null}
+    <View style={styles.row}><AppText variant="subtitle">Demo perspective</AppText><AppText variant="caption" muted>fictional people</AppText></View><Surface style={{gap:spacing.sm}}>{personas.map(person=><Pressable key={person.id} onPress={()=>setPersona(person.id)} style={[styles.persona,person.id===persona.id&&styles.personaActive]}><Avatar name={person.name} size={42}/><View style={{flex:1}}><AppText variant="label">{person.name}</AppText><AppText variant="caption" muted>{citiesLabel(person.cityId, cities)}</AppText></View><AppText style={{color:person.id===persona.id?colors.herb700:colors.muted}}>{person.id===persona.id?'✓':'›'}</AppText></Pressable>)}</Surface>
+    <View style={styles.row}><AppText variant="subtitle">Social shortcuts</AppText></View><View style={styles.shortcuts}><Link href={'/people' as Href} asChild><Pressable style={styles.shortcut}><AppText style={styles.shortcutIcon}>◎</AppText><AppText variant="label">Find people</AppText></Pressable></Link><Link href={'/notifications' as Href} asChild><Pressable style={styles.shortcut}><AppText style={styles.shortcutIcon}>♧</AppText><AppText variant="label">Notifications</AppText></Pressable></Link><Link href={'/rankings' as Href} asChild><Pressable style={styles.shortcut}><AppText style={styles.shortcutIcon}>✦</AppText><AppText variant="label">City rankings</AppText></Pressable></Link></View>
+    {ownPosts.length>0&&<View style={{gap:spacing.sm}}><AppText variant="subtitle">Recent notes</AppText>{ownPosts.map(p=><Surface key={p.id}><AppText variant="label">{p.restaurant.name}</AppText><AppText variant="caption" muted>{p.rating}/10 · {p.visibility==='FriendsOnly'?'Friends only':'Public'}</AppText><AppText variant="bodySmall">{p.text}</AppText></Surface>)}</View>}
+  </View></ScrollView>;
+}
+function citiesLabel(cityId:number,cities:{id:number;name:string;countryName:string}[]){const c=cities.find(x=>x.id===cityId);return c?`${c.name}, ${c.countryName}`:'Scandinavia';}
+const styles=StyleSheet.create({page:{flex:1,backgroundColor:colors.cream100},content:{paddingBottom:24},shell:{width:'100%',maxWidth:520,alignSelf:'center',padding:spacing.lg,gap:spacing.md},header:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},bell:{width:44,height:44,borderRadius:radii.pill,backgroundColor:colors.white,alignItems:'center',justifyContent:'center'},profileCard:{alignItems:'center',gap:spacing.sm,paddingVertical:spacing.xl},stats:{flexDirection:'row',justifyContent:'space-around',width:'100%',paddingTop:spacing.md,marginTop:spacing.md,borderTopWidth:1,borderTopColor:colors.border},bio:{textAlign:'center',paddingHorizontal:spacing.md},row:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:spacing.sm},persona:{flexDirection:'row',alignItems:'center',gap:spacing.md,padding:spacing.sm,borderRadius:radii.md},personaActive:{backgroundColor:colors.teal50},shortcuts:{flexDirection:'row',gap:spacing.sm},shortcut:{flex:1,minHeight:78,borderRadius:radii.md,backgroundColor:colors.white,alignItems:'center',justifyContent:'center',gap:4,borderWidth:1,borderColor:colors.border},shortcutIcon:{fontSize:20,color:colors.coral700}});

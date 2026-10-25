@@ -13,6 +13,8 @@ public static class SeedData
         // Check if database has already been seeded
         if (await context.Countries.AnyAsync())
         {
+            // Keep the restaurant directory current for databases created by older versions.
+            await RestaurantDirectorySeedData.EnsureAsync(context);
             return;
         }
 
@@ -925,5 +927,7 @@ public static class SeedData
         };
         await context.TrendingRestaurants.AddRangeAsync(trending);
         await context.SaveChangesAsync();
+
+        await RestaurantDirectorySeedData.EnsureAsync(context);
     }
 }
