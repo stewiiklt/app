@@ -24,7 +24,7 @@ export default function TabLayout() {
         width: '100%',
         maxWidth: 480,
         alignSelf: 'center',
-        height: 76,
+        height: 84,
         paddingTop: 8,
         paddingBottom: 10,
         borderTopWidth: 1,
