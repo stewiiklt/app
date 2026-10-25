@@ -29,11 +29,25 @@ export default function Root({ children }: { children: ReactNode }) {
 }
 
 const responsiveBackground = `
+* { box-sizing: border-box; }
+html, body, #root {
+  min-height: 100%;
+  margin: 0;
+}
 body {
-  background-color: #fff;
+  background-color: #FFFAF5;
+  color: #2D3436;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button, input, textarea {
+  font: inherit;
 }
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #000;
+    background-color: #FFFAF5;
   }
 }`;
