@@ -4,283 +4,317 @@ using Microsoft.EntityFrameworkCore;
 namespace FoodieFriends.Infrastructure.Data;
 
 /// <summary>
-/// Adds a real, curated restaurant directory to every supported municipality.
+/// Adds a synthetic restaurant directory to every supported municipality.
 /// These entries intentionally carry no photos, ratings, review counts, or precise
-/// street addresses unless those values are collected from a trusted source.
+/// street addresses because they are fictional prototype data.
 /// </summary>
 internal static class RestaurantDirectorySeedData
 {
     private sealed record Entry(int MunicipalityId, string Name, string Cuisine);
 
-    // Name and cuisine labels are a curated starter directory, not endorsements.
-    // Keep the list at ten per supported municipality; source guides are documented in
+    // Names are fictional seed data; cuisine labels provide variety in the prototype.
+    // Keep the list at ten per supported municipality. Seed-data notes are documented in
     // Documentation/RESTAURANT_DIRECTORY_SOURCES.md.
     private static readonly Entry[] Entries = Parse("""
-1|Maaemo|Nordic
-1|Kontrast|Nordic
-1|Statholdergaarden|Nordic
-1|Sabi Omakase Oslo|Japanese
-1|Arakataka|Nordic
-1|Smalhans|Nordic
-1|Lofoten Fiskerestaurant|Seafood
-1|Eero|Nordic
-1|Brasserie Hansken|French
-1|Vaaghals|Nordic
-2|Lysverket|Nordic
-2|Gaptrast|Nordic
-2|Omakase by Sergey Pak|Japanese
-2|Allmuen Bistro|Nordic
-2|Enhjørningen|Seafood
-2|Bryggeloftet & Stuene|Norwegian
-2|To Kokker|Norwegian
-2|Colonialen Sann|Nordic
-2|Marg & Bein|Norwegian
-2|Pingvinen|Norwegian
-3|RE-NAA|Nordic
-3|Hermetikken|Nordic
-3|Bellies|Plant-based
-3|A. Idsøe Grill & Berkel|Grill
-3|Gaffel & Karaffel|Nordic
-3|Fisketorget Stavanger|Seafood
-3|Spiseriet|Nordic
-3|Matmagasinet|Nordic
-3|Sirkus Renaa|Italian
-3|Bravo|Nordic
-4|Speilsalen|Nordic
-4|Fagn|Nordic
-4|Fagn Bistro|Nordic
-4|Bakklandet Skydsstation|Norwegian
-4|To Rom og Kjøkken|Nordic
-4|Havfruen|Seafood
-4|Troll Restaurant|Norwegian
-4|Sellanraa|Nordic
-4|Frati|Italian
-4|Una Pizzeria e Bar|Italian
-5|Skutebrygga|Seafood
-5|Vertshuset Oscar & Stallen|Norwegian
-5|Anchas Bodega|Spanish
-5|Litt Kaos|Nordic
-5|Alpenhaus Drammen|German
-5|Mesa Libre|Mexican
-5|Masalabar|Indian
-5|Taj Mahal|Indian
-5|That’s Amore|Italian
-5|Mekong Kjøkken|Vietnamese
-6|Frantzén|Nordic
-6|AIRA|Nordic
-6|Adam Albin|Nordic
-6|Ekstedt|Nordic
-6|Operakällaren|Nordic
-6|Nour|Nordic
-6|Dashi|Japanese
-6|Sushi Sho|Japanese
-6|Sturehof|Seafood
-6|Pelikan|Swedish
-7|Koka|Nordic
-7|Project|Nordic
-7|Restaurang 28+|French
-7|Hoze|Japanese
-7|SK Mat & Människor|Swedish
-7|Bhoga|Nordic
-7|Vrå|Japanese
-7|Diket|Nordic
-7|Bar La Lune|French
-7|Familjen|Swedish
-8|Vollmers|Nordic
-8|Aster|Nordic
-8|Ruths|Nordic
-8|Lyran|Nordic
-8|Västergatan|Nordic
-8|Mutantur|Nordic
-8|Namu|Korean
-8|Bouchon|French
-8|Atmosfär|Nordic
-8|Saltimporten Canteen|Nordic
-9|Hambergs Fisk|Seafood
-9|Klostergatan 5|Nordic
-9|Villa Anna|Nordic
-9|Dryck & Mat|Nordic
-9|Miss Voon|Asian
-9|Jay Fu|Asian
-9|Aaltos Italian Grill|Italian
-9|Uppströms Fisk & Skaldjur|Seafood
-9|Peppar Peppar|Nordic
-9|Domtrappkällaren|Swedish
-10|Frank|Nordic
-10|Nya Hattfabriken|Swedish
-10|Limone|Italian
-10|Hermanas|Mexican
-10|Djäknebergets Restaurang|Nordic
-10|Bored Kitchen|Burgers
-10|Naan Indisk Restaurang|Indian
-10|Adam & Oliver|Nordic
-10|Pärlan vedugnspizzeria & kolgrill|Italian
-10|Stigen Västerås|Nordic
-11|Geranium|Nordic
-11|Kadeau|Nordic
-11|Høst|Nordic
-11|Alchemist|Nordic
-11|Kong Hans Kælder|Nordic
-11|AOC|Nordic
-11|Koan|Asian
-11|JATAK|Nordic
-11|Schønnemann|Danish
-11|Noma|Nordic
-12|Frederikshøj|Nordic
-12|Gastromé|Nordic
-12|Domestic|Nordic
-12|Substans|Nordic
-12|Hærværk|Nordic
-12|Restaurant ET|French
-12|Klassisk 65|French
-12|Mefisto|Seafood
-12|Bardok|European
-12|KöD Aarhus|Steakhouse
-13|ARO|Nordic
-13|HOS|Danish
-13|Sortebro Kro|Danish
-13|Det Glade Vanvid|Nordic
-13|Oluf Bagers Gård|Danish
-13|Kok & Vin|French
-13|Goma|Japanese
-13|I Pupi Siciliani|Italian
-13|Den Gamle Kro|Danish
-13|Restaurant Pasfall|Nordic
-14|Alimentum|Nordic
-14|Bühlmann|Nordic
-14|Mortens Kro|Nordic
-14|Restaurant Applaus|Nordic
-14|Fusion|Asian
-14|Struktur|Nordic
-14|Textur|Nordic
-14|Restaurant JØRN|Nordic
-14|Fisk & Skaldyr|Seafood
-14|Duus Vinkjælder|Danish
-15|Restaurant Posten|Danish
-15|Café Danmark|Danish
-15|Restaurant Kunsten|Nordic
-15|Appetiit|Nordic
-15|Restaurant Strandpavillonen|Seafood
-15|Esbjerg Bryghus|Brewpub
-15|Spisestuen|Danish
-15|Namaste Esbjerg|Indian
-15|Taverna Famila|Italian
-15|Bluesette Café|Cafe
-16|Palace|Nordic
-16|Grön|Nordic
-16|Olo|Nordic
-16|Demo|Nordic
-16|Finnjävel Salon|Finnish
-16|Nolla|Nordic
-16|Natura|Nordic
-16|Nokka|Finnish
-16|Plein|Nordic
-16|Kuurna|Nordic
-17|Kajo|Nordic
-17|Apaja|Seafood
-17|Bertha|Nordic
-17|LiV|Nordic
-17|Saivo|Nordic
-17|Näsinneula|Nordic
-17|Huber|Steakhouse
-17|4 Vuodenaikaa|Finnish
-17|Tiiliholvi|Finnish
-17|Pizzeria Napoli|Italian
-18|Kaskis|Nordic
-18|Mami|Nordic
-18|Kakolanruusu|Nordic
-18|Herkkunuotta|Seafood
-18|Vinossa|Nordic
-18|Brasserie Amelie|French
-18|Roster|Nordic
-18|Tintå|Nordic
-18|Karu|Japanese
-18|Smör|Nordic
-19|Puistola|Nordic
-19|Pannu|Finnish
-19|Alfred Kitchen & Bar|Nordic
-19|Cafe Rooster|Burgers
-19|Oula Kitchen & Bar|Nordic
-19|Nallikari|Seafood
-19|VENN Oulu|Nordic
-19|Kauppuri 5|Burgers
-19|Ravintola Ule|Nordic
-19|Grill Nordic|Grill
-20|Figaro|Nordic
-20|Cielo|Spanish
-20|Harmooni|Nordic
-20|Kuokkalan Kartanon Ravintola|Nordic
-20|Bistro Kirkkopuisto|Nordic
-20|La Brava Boqueria|Spanish
-20|Kissanviikset|Finnish
-20|Marani|Georgian
-20|Sohwi|Finnish
-20|Stefan’s Steakhouse Jyväskylä|Steakhouse
-21|Dill|Nordic
-21|Matur og Drykkur|Icelandic
-21|Fiskfélagið|Seafood
-21|Fish Market|Seafood
-21|Grillmarkaðurinn|Icelandic
-21|Apotek Kitchen + Bar|Nordic
-21|Sumac|Middle Eastern
-21|Tides|Nordic
-21|Café Loki|Icelandic
-21|Bæjarins Beztu Pylsur|Street Food
-22|Krónikan|Icelandic
-22|Brasserie Kársnes|French
-22|Djúsí Sushi|Japanese
-22|Serrano Smáralind|Mexican
-22|Sbarro Smáralind|Italian
-22|La Trattoria Smáralind|Italian
-22|Funky Bhangra|Indian
-22|Yuzu Smáralind|Japanese
-22|Topwings Smáralind|Chicken
-22|Hjá Höllu Smáralind|Cafe
-23|Sól Restaurant|Nordic
-23|Wok to Walk|Asian
-23|Von Mathús & Bar|Nordic
-23|Tilveran|Icelandic
-23|KRYDD|Asian
-23|A. Hansen|Icelandic
-23|Loving Vegan|Plant-based
-23|Fjörukráin|Icelandic
-23|Rif Restaurant|Seafood
-23|Ölhúsið Hafnarfjörður|Brewpub
-24|Kaffi Duus|Seafood
-24|Fernando’s|Italian
-24|Ráin|Seafood
-24|Kef Restaurant|Nordic
-24|Fiskbarinn|Seafood
-24|Langbest|Icelandic
-24|Malai Thai|Thai
-24|Antons Mamma Mia|Italian
-24|Biryani|Indian
-24|Hamborgarabúlla Tómasar|Burgers
-25|Rub23|Japanese
-25|LYST|Nordic
-25|North Restaurant|Nordic
-25|Greifinn|Icelandic
-25|Bautinn|Icelandic
-25|Akureyri Backpackers|European
-25|Krua Siam|Thai
-25|Indian Curry House|Indian
-25|Strikið|Nordic
-25|Mulaberg Bistro & Bar|Nordic
+1|Willowwhisk|Nordic
+1|Willowbowl|Nordic
+1|Willowtable|Nordic
+1|Willowpantry|Japanese
+1|Willowhearth|Nordic
+1|Willowgarden|Nordic
+1|Willowspoon|Seafood
+1|Willowkitchen|Nordic
+1|Willowplate|French
+1|Willowfold|Nordic
+2|Copperwhisk|Nordic
+2|Copperbowl|Nordic
+2|Coppertable|Japanese
+2|Copperpantry|Nordic
+2|Copperhearth|Seafood
+2|Coppergarden|Norwegian
+2|Copperspoon|Norwegian
+2|Copperkitchen|Nordic
+2|Copperplate|Norwegian
+2|Copperfold|Norwegian
+3|Lanternwhisk|Nordic
+3|Lanternbowl|Nordic
+3|Lanterntable|Plant-based
+3|Lanternpantry|Grill
+3|Lanternhearth|Nordic
+3|Lanterngarden|Seafood
+3|Lanternspoon|Nordic
+3|Lanternkitchen|Nordic
+3|Lanternplate|Italian
+3|Lanternfold|Nordic
+4|Meadowwhisk|Nordic
+4|Meadowbowl|Nordic
+4|Meadowtable|Nordic
+4|Meadowpantry|Norwegian
+4|Meadowhearth|Nordic
+4|Meadowgarden|Seafood
+4|Meadowspoon|Norwegian
+4|Meadowkitchen|Nordic
+4|Meadowplate|Italian
+4|Meadowfold|Italian
+5|Juniperwhisk|Seafood
+5|Juniperbowl|Norwegian
+5|Junipertable|Spanish
+5|Juniperpantry|Nordic
+5|Juniperhearth|German
+5|Junipergarden|Mexican
+5|Juniperspoon|Indian
+5|Juniperkitchen|Indian
+5|Juniperplate|Italian
+5|Juniperfold|Vietnamese
+6|Amberwhisk|Nordic
+6|Amberbowl|Nordic
+6|Ambertable|Nordic
+6|Amberpantry|Nordic
+6|Amberhearth|Nordic
+6|Ambergarden|Nordic
+6|Amberspoon|Japanese
+6|Amberkitchen|Japanese
+6|Amberplate|Seafood
+6|Amberfold|Swedish
+7|Silverwhisk|Nordic
+7|Silverbowl|Nordic
+7|Silvertable|French
+7|Silverpantry|Japanese
+7|Silverhearth|Swedish
+7|Silvergarden|Nordic
+7|Silverspoon|Japanese
+7|Silverkitchen|Nordic
+7|Silverplate|French
+7|Silverfold|Swedish
+8|Cloudwhisk|Nordic
+8|Cloudbowl|Nordic
+8|Cloudtable|Nordic
+8|Cloudpantry|Nordic
+8|Cloudhearth|Nordic
+8|Cloudgarden|Nordic
+8|Cloudspoon|Korean
+8|Cloudkitchen|French
+8|Cloudplate|Nordic
+8|Cloudfold|Nordic
+9|Velvetwhisk|Seafood
+9|Velvetbowl|Nordic
+9|Velvettable|Nordic
+9|Velvetpantry|Nordic
+9|Velvethearth|Asian
+9|Velvetgarden|Asian
+9|Velvetspoon|Italian
+9|Velvetkitchen|Seafood
+9|Velvetplate|Nordic
+9|Velvetfold|Swedish
+10|Pebblewhisk|Nordic
+10|Pebblebowl|Swedish
+10|Pebbletable|Italian
+10|Pebblepantry|Mexican
+10|Pebblehearth|Nordic
+10|Pebblegarden|Burgers
+10|Pebblespoon|Indian
+10|Pebblekitchen|Nordic
+10|Pebbleplate|Italian
+10|Pebblefold|Nordic
+11|Hearthwhisk|Nordic
+11|Hearthbowl|Nordic
+11|Hearthtable|Nordic
+11|Hearthpantry|Nordic
+11|Hearthhearth|Nordic
+11|Hearthgarden|Nordic
+11|Hearthspoon|Asian
+11|Hearthkitchen|Nordic
+11|Hearthplate|Danish
+11|Hearthfold|Nordic
+12|Fablewhisk|Nordic
+12|Fablebowl|Nordic
+12|Fabletable|Nordic
+12|Fablepantry|Nordic
+12|Fablehearth|Nordic
+12|Fablegarden|French
+12|Fablespoon|French
+12|Fablekitchen|Seafood
+12|Fableplate|European
+12|Fablefold|Steakhouse
+13|Apricotwhisk|Nordic
+13|Apricotbowl|Danish
+13|Apricottable|Danish
+13|Apricotpantry|Nordic
+13|Apricothearth|Danish
+13|Apricotgarden|French
+13|Apricotspoon|Japanese
+13|Apricotkitchen|Italian
+13|Apricotplate|Danish
+13|Apricotfold|Nordic
+14|Mosswhisk|Nordic
+14|Mossbowl|Nordic
+14|Mosstable|Nordic
+14|Mosspantry|Nordic
+14|Mosshearth|Asian
+14|Mossgarden|Nordic
+14|Mossspoon|Nordic
+14|Mosskitchen|Nordic
+14|Mossplate|Seafood
+14|Mossfold|Danish
+15|Honeywhisk|Danish
+15|Honeybowl|Danish
+15|Honeytable|Nordic
+15|Honeypantry|Nordic
+15|Honeyhearth|Seafood
+15|Honeygarden|Brewpub
+15|Honeyspoon|Danish
+15|Honeykitchen|Indian
+15|Honeyplate|Italian
+15|Honeyfold|Cafe
+16|Wildwhisk|Nordic
+16|Wildbowl|Nordic
+16|Wildtable|Nordic
+16|Wildpantry|Nordic
+16|Wildhearth|Finnish
+16|Wildgarden|Nordic
+16|Wildspoon|Nordic
+16|Wildkitchen|Finnish
+16|Wildplate|Nordic
+16|Wildfold|Nordic
+17|Kindredwhisk|Nordic
+17|Kindredbowl|Seafood
+17|Kindredtable|Nordic
+17|Kindredpantry|Nordic
+17|Kindredhearth|Nordic
+17|Kindredgarden|Nordic
+17|Kindredspoon|Steakhouse
+17|Kindredkitchen|Finnish
+17|Kindredplate|Finnish
+17|Kindredfold|Italian
+18|Mellowwhisk|Nordic
+18|Mellowbowl|Nordic
+18|Mellowtable|Nordic
+18|Mellowpantry|Seafood
+18|Mellowhearth|Nordic
+18|Mellowgarden|French
+18|Mellowspoon|Nordic
+18|Mellowkitchen|Nordic
+18|Mellowplate|Japanese
+18|Mellowfold|Nordic
+19|Fernwhisk|Nordic
+19|Fernbowl|Finnish
+19|Ferntable|Nordic
+19|Fernpantry|Burgers
+19|Fernhearth|Nordic
+19|Ferngarden|Seafood
+19|Fernspoon|Nordic
+19|Fernkitchen|Burgers
+19|Fernplate|Nordic
+19|Fernfold|Grill
+20|Orchardwhisk|Nordic
+20|Orchardbowl|Spanish
+20|Orchardtable|Nordic
+20|Orchardpantry|Nordic
+20|Orchardhearth|Nordic
+20|Orchardgarden|Spanish
+20|Orchardspoon|Finnish
+20|Orchardkitchen|Georgian
+20|Orchardplate|Finnish
+20|Orchardfold|Steakhouse
+21|Bluewhisk|Nordic
+21|Bluebowl|Icelandic
+21|Bluetable|Seafood
+21|Bluepantry|Seafood
+21|Bluehearth|Icelandic
+21|Bluegarden|Nordic
+21|Bluespoon|Middle Eastern
+21|Bluekitchen|Nordic
+21|Blueplate|Icelandic
+21|Bluefold|Street Food
+22|Paperwhisk|Icelandic
+22|Paperbowl|French
+22|Papertable|Japanese
+22|Paperpantry|Mexican
+22|Paperhearth|Italian
+22|Papergarden|Italian
+22|Paperspoon|Indian
+22|Paperkitchen|Japanese
+22|Paperplate|Chicken
+22|Paperfold|Cafe
+23|Sunlitwhisk|Nordic
+23|Sunlitbowl|Asian
+23|Sunlittable|Nordic
+23|Sunlitpantry|Icelandic
+23|Sunlithearth|Asian
+23|Sunlitgarden|Icelandic
+23|Sunlitspoon|Plant-based
+23|Sunlitkitchen|Icelandic
+23|Sunlitplate|Seafood
+23|Sunlitfold|Brewpub
+24|Winterwhisk|Seafood
+24|Winterbowl|Italian
+24|Wintertable|Seafood
+24|Winterpantry|Nordic
+24|Winterhearth|Seafood
+24|Wintergarden|Icelandic
+24|Winterspoon|Thai
+24|Winterkitchen|Italian
+24|Winterplate|Indian
+24|Winterfold|Burgers
+25|Littlewhisk|Japanese
+25|Littlebowl|Nordic
+25|Littletable|Nordic
+25|Littlepantry|Icelandic
+25|Littlehearth|Icelandic
+25|Littlegarden|European
+25|Littlespoon|Thai
+25|Littlekitchen|Indian
+25|Littleplate|Nordic
+25|Littlefold|Nordic
 """);
 
     public static async Task EnsureAsync(FoodieFriendsDbContext context)
     {
-        var existing = await context.Restaurants
-            .AsNoTracking()
-            .Select(restaurant => new { restaurant.MunicipalityId, restaurant.Name })
-            .ToListAsync();
-        var known = existing
-            .Select(restaurant => (restaurant.MunicipalityId, restaurant.Name.Trim()))
-            .ToHashSet(new MunicipalityNameComparer());
+        var existing = await context.Restaurants.ToListAsync();
 
         var countryCodes = await context.Municipalities
             .AsNoTracking()
             .ToDictionaryAsync(municipality => municipality.Id, municipality => municipality.CountryCode);
+
+        // Rename the previous ten-per-city directory in place so an existing local
+        // database does not retain real venue names or duplicate the new fixtures.
+        foreach (var group in Entries.GroupBy(entry => entry.MunicipalityId))
+        {
+            if (!countryCodes.TryGetValue(group.Key, out var countryCode))
+            {
+                continue;
+            }
+
+            var expectedAddress = $"{CityName(group.Key)}, {countryCode}";
+            var previousSeedRows = existing
+                .Where(restaurant => restaurant.MunicipalityId == group.Key
+                    && restaurant.Address == expectedAddress
+                    && restaurant.WebsiteUrl == null
+                    && restaurant.CoverImageUrl == null
+                    && restaurant.AverageRating == 0m
+                    && restaurant.TotalReviews == 0
+                    && restaurant.PriceRange == 2)
+                .OrderBy(restaurant => restaurant.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var replacements = group
+                .OrderBy(entry => entry.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            if (previousSeedRows.Length != replacements.Length)
+            {
+                continue;
+            }
+
+            for (var index = 0; index < replacements.Length; index++)
+            {
+                previousSeedRows[index].Name = replacements[index].Name;
+                previousSeedRows[index].CuisineType = replacements[index].Cuisine;
+            }
+        }
+
+        var known = existing
+            .Select(restaurant => (restaurant.MunicipalityId, restaurant.Name.Trim()))
+            .ToHashSet(new MunicipalityNameComparer());
 
         var additions = Entries
             .Where(entry => countryCodes.ContainsKey(entry.MunicipalityId))

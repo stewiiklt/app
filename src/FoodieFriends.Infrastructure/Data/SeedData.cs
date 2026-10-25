@@ -13,6 +13,7 @@ public static class SeedData
         // Check if database has already been seeded
         if (await context.Countries.AnyAsync())
         {
+            await UpdateDemoRestaurantNamesAsync(context);
             // Keep the restaurant directory current for databases created by older versions.
             await RestaurantDirectorySeedData.EnsureAsync(context);
             return;
@@ -246,17 +247,17 @@ public static class SeedData
         await context.Follows.AddRangeAsync(follows);
         await context.SaveChangesAsync();
 
-        // 6. Restaurants (20 across Oslo, Stockholm, Copenhagen, Bergen, Helsinki, Reykjavik)
+        // 6. Fictional demo restaurants across Oslo, Stockholm, Copenhagen, Bergen, Helsinki, and Reykjavik
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var r1 = new Restaurant
         {
             Id = Guid.Parse("a0000001-0000-0000-0000-000000000001"),
-            Name = "Maaemo",
-            Address = "Dronning Eufemias gate 23, 0194 Oslo",
+            Name = "Rowan & Ember",
+            Address = "Fictional demo location",
             MunicipalityId = 1,
             CuisineType = "Nordic Fine Dining",
             PriceRange = 4,
-            WebsiteUrl = "https://maaemo.no",
+            WebsiteUrl = null,
             CoverImageUrl = "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
             OpenedDate = new DateOnly(2021, 3, 1),
             AverageRating = 9.4m,
@@ -266,12 +267,12 @@ public static class SeedData
         var r2 = new Restaurant
         {
             Id = Guid.Parse("a0000002-0000-0000-0000-000000000002"),
-            Name = "Mamma Pizza",
-            Address = "Dronningens gate 22, 0154 Oslo",
+            Name = "Tallow & Thyme",
+            Address = "Fictional demo location",
             MunicipalityId = 1,
             CuisineType = "Italian",
             PriceRange = 2,
-            WebsiteUrl = "https://mammapizza.no",
+            WebsiteUrl = null,
             CoverImageUrl = "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800",
             OpenedDate = new DateOnly(2022, 5, 10),
             AverageRating = 8.6m,
@@ -281,8 +282,8 @@ public static class SeedData
         var r3 = new Restaurant
         {
             Id = Guid.Parse("a0000003-0000-0000-0000-000000000003"),
-            Name = "Sabi Omakase Oslo",
-            Address = "Vika Atrium, Munkedamsveien 45, 0250 Oslo",
+            Name = "Yuzu Vale",
+            Address = "Fictional demo location",
             MunicipalityId = 1,
             CuisineType = "Japanese",
             PriceRange = 4,
@@ -295,8 +296,8 @@ public static class SeedData
         var r4 = new Restaurant
         {
             Id = Guid.Parse("a0000004-0000-0000-0000-000000000004"),
-            Name = "Way Down South",
-            Address = "Østre Elvebakke 8, 0182 Oslo",
+            Name = "Hearthside Drift",
+            Address = "Fictional demo location",
             MunicipalityId = 1,
             CuisineType = "Street Food",
             PriceRange = 2,
@@ -309,8 +310,8 @@ public static class SeedData
         var r5 = new Restaurant
         {
             Id = Guid.Parse("a0000005-0000-0000-0000-000000000005"),
-            Name = "Fiskeriet Youngstorget",
-            Address = "Youngstorget 2b, 0181 Oslo",
+            Name = "Brine & Birch",
+            Address = "Fictional demo location",
             MunicipalityId = 1,
             CuisineType = "Seafood",
             PriceRange = 2,
@@ -323,8 +324,8 @@ public static class SeedData
         var r6 = new Restaurant
         {
             Id = Guid.Parse("a0000006-0000-0000-0000-000000000006"),
-            Name = "Bass Oslo",
-            Address = "Thorvald Meyers gate 26C, 0555 Oslo",
+            Name = "Juniper Fold",
+            Address = "Fictional demo location",
             MunicipalityId = 1,
             CuisineType = "Norwegian",
             PriceRange = 3,
@@ -338,8 +339,8 @@ public static class SeedData
         var r7 = new Restaurant
         {
             Id = Guid.Parse("a0000007-0000-0000-0000-000000000007"),
-            Name = "Frantzén",
-            Address = "Klara Norra kyrkogata 26, 111 22 Stockholm",
+            Name = "Copper Lark",
+            Address = "Fictional demo location",
             MunicipalityId = 6,
             CuisineType = "Fine Dining",
             PriceRange = 4,
@@ -352,8 +353,8 @@ public static class SeedData
         var r8 = new Restaurant
         {
             Id = Guid.Parse("a0000008-0000-0000-0000-000000000008"),
-            Name = "Omnipollos Hatt",
-            Address = "Hökens gata 1A, 116 46 Stockholm",
+            Name = "Sesame Orbit",
+            Address = "Fictional demo location",
             MunicipalityId = 6,
             CuisineType = "Italian",
             PriceRange = 2,
@@ -366,8 +367,8 @@ public static class SeedData
         var r9 = new Restaurant
         {
             Id = Guid.Parse("a0000009-0000-0000-0000-000000000009"),
-            Name = "Sushi Oi",
-            Address = "Karlavägen 36, 114 49 Stockholm",
+            Name = "Sora Table",
+            Address = "Fictional demo location",
             MunicipalityId = 6,
             CuisineType = "Japanese",
             PriceRange = 3,
@@ -380,8 +381,8 @@ public static class SeedData
         var r10 = new Restaurant
         {
             Id = Guid.Parse("a0000010-0000-0000-0000-000000000010"),
-            Name = "Lilla Ego",
-            Address = "Västmannagatan 69, 113 26 Stockholm",
+            Name = "Mallow & Rye",
+            Address = "Fictional demo location",
             MunicipalityId = 6,
             CuisineType = "Modern Scandinavian",
             PriceRange = 3,
@@ -394,8 +395,8 @@ public static class SeedData
         var r11 = new Restaurant
         {
             Id = Guid.Parse("a0000011-0000-0000-0000-000000000011"),
-            Name = "Meatballs for the People",
-            Address = "Nytorgsgatan 30, 116 40 Stockholm",
+            Name = "Fern Lantern",
+            Address = "Fictional demo location",
             MunicipalityId = 6,
             CuisineType = "Swedish",
             PriceRange = 2,
@@ -409,8 +410,8 @@ public static class SeedData
         var r12 = new Restaurant
         {
             Id = Guid.Parse("a0000012-0000-0000-0000-000000000012"),
-            Name = "Noma",
-            Address = "Refshalevej 96, 1432 Copenhagen",
+            Name = "Alder & Ash",
+            Address = "Fictional demo location",
             MunicipalityId = 11,
             CuisineType = "Fine Dining",
             PriceRange = 4,
@@ -423,8 +424,8 @@ public static class SeedData
         var r13 = new Restaurant
         {
             Id = Guid.Parse("a0000013-0000-0000-0000-000000000013"),
-            Name = "Bæst",
-            Address = "Guldbergsgade 29, 2200 Copenhagen",
+            Name = "Wild Fig Table",
+            Address = "Fictional demo location",
             MunicipalityId = 11,
             CuisineType = "Italian",
             PriceRange = 3,
@@ -437,8 +438,8 @@ public static class SeedData
         var r14 = new Restaurant
         {
             Id = Guid.Parse("a0000014-0000-0000-0000-000000000014"),
-            Name = "Popl Burger",
-            Address = "Strandgade 108, 1401 Copenhagen",
+            Name = "Little Fjord Burger",
+            Address = "Fictional demo location",
             MunicipalityId = 11,
             CuisineType = "Burgers",
             PriceRange = 2,
@@ -451,8 +452,8 @@ public static class SeedData
         var r15 = new Restaurant
         {
             Id = Guid.Parse("a0000015-0000-0000-0000-000000000015"),
-            Name = "Slurp Ramen Joint",
-            Address = "Nansensgade 90, 1366 Copenhagen",
+            Name = "Nori Lantern",
+            Address = "Fictional demo location",
             MunicipalityId = 11,
             CuisineType = "Japanese",
             PriceRange = 2,
@@ -465,8 +466,8 @@ public static class SeedData
         var r16 = new Restaurant
         {
             Id = Guid.Parse("a0000016-0000-0000-0000-000000000016"),
-            Name = "Sanchez",
-            Address = "Istedgade 60, 1650 Copenhagen",
+            Name = "Cinder & Cumin",
+            Address = "Fictional demo location",
             MunicipalityId = 11,
             CuisineType = "Street Food",
             PriceRange = 2,
@@ -480,8 +481,8 @@ public static class SeedData
         var r17 = new Restaurant
         {
             Id = Guid.Parse("a0000017-0000-0000-0000-000000000017"),
-            Name = "Lysverket",
-            Address = "Rasmus Meyers allé 9, 5015 Bergen",
+            Name = "Cloudberry House",
+            Address = "Fictional demo location",
             MunicipalityId = 2,
             CuisineType = "Modern Norwegian",
             PriceRange = 3,
@@ -494,8 +495,8 @@ public static class SeedData
         var r18 = new Restaurant
         {
             Id = Guid.Parse("a0000018-0000-0000-0000-000000000018"),
-            Name = "Grön",
-            Address = "Albertinkatu 36, 00180 Helsinki",
+            Name = "Amber Fern",
+            Address = "Fictional demo location",
             MunicipalityId = 16,
             CuisineType = "Nordic",
             PriceRange = 3,
@@ -508,8 +509,8 @@ public static class SeedData
         var r19 = new Restaurant
         {
             Id = Guid.Parse("a0000019-0000-0000-0000-000000000019"),
-            Name = "Dill",
-            Address = "Laugavegur 59, 101 Reykjavík",
+            Name = "Northglass Kitchen",
+            Address = "Fictional demo location",
             MunicipalityId = 21,
             CuisineType = "Contemporary Icelandic",
             PriceRange = 4,
@@ -532,7 +533,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000001-0000-0000-0000-000000000001"),
             UserId = u1Id, // Anna
-            RestaurantId = r1.Id, // Maaemo
+            RestaurantId = r1.Id, // Rowan & Ember
             Rating = 9,
             Title = "Absolutely extraordinary (#2)",
             Body = "Second visit and somehow even better than the first. The Norwegian langoustine dish paired with wild pine broth was unforgettable. Unmatched hospitality.",
@@ -552,7 +553,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000002-0000-0000-0000-000000000002"),
             UserId = u6Id, // Ingrid
-            RestaurantId = r1.Id, // Maaemo
+            RestaurantId = r1.Id, // Rowan & Ember
             Rating = 10,
             Title = "A culinary journey of a lifetime",
             Body = "Celebrated our anniversary here. Truly poetry on a plate. The attention to local Scandinavian terroir is sublime.",
@@ -571,7 +572,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000003-0000-0000-0000-000000000003"),
             UserId = u1Id, // Anna
-            RestaurantId = r2.Id, // Mamma Pizza
+            RestaurantId = r2.Id, // Tallow & Thyme
             Rating = 8,
             Title = "Best crust in downtown Oslo",
             Body = "Real Roman style pizza with generous toppings and bubbly crust. The Diavola has just the right kick.",
@@ -590,7 +591,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000004-0000-0000-0000-000000000004"),
             UserId = u6Id, // Ingrid
-            RestaurantId = r2.Id, // Mamma Pizza
+            RestaurantId = r2.Id, // Tallow & Thyme
             Rating = 9,
             Title = "Authentic Italian hospitality",
             Body = "Staff treat you like family! Crispy crust, fresh buffalo mozzarella, and great Aperol spritz.",
@@ -605,7 +606,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000005-0000-0000-0000-000000000005"),
             UserId = u1Id, // Anna
-            RestaurantId = r3.Id, // Sabi Omakase Oslo (NEW)
+            RestaurantId = r3.Id, // Yuzu Vale (NEW)
             Rating = 9,
             Title = "Next-level sushi craft in Vika",
             Body = "Just opened and already top tier. Only 10 seats around the chef counter. The grilled otoro was mind-blowing.",
@@ -624,7 +625,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000006-0000-0000-0000-000000000006"),
             UserId = u6Id, // Ingrid
-            RestaurantId = r4.Id, // Way Down South (NEW)
+            RestaurantId = r4.Id, // Hearthside Drift (NEW)
             Rating = 8,
             Title = "Smoked brisket perfection",
             Body = "Bark on the brisket was incredible. Melt-in-your-mouth tenderness and the mac and cheese was decadent.",
@@ -639,9 +640,9 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000007-0000-0000-0000-000000000007"),
             UserId = u3Id, // Sofia
-            RestaurantId = r7.Id, // Frantzén
+            RestaurantId = r7.Id, // Copper Lark
             Rating = 10,
-            Title = "3 Michelin star brilliance in Stockholm",
+            Title = "A night to remember in Stockholm",
             Body = "From the rooftop greenhouse reception to the elevator ride and open kitchen, this is the pinnacle of modern gastronomy.",
             VisitNumber = 1,
             Visibility = ReviewVisibility.Public,
@@ -658,7 +659,7 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000008-0000-0000-0000-000000000008"),
             UserId = u7Id, // Jonas
-            RestaurantId = r8.Id, // Omnipollos Hatt
+            RestaurantId = r8.Id, // Sesame Orbit
             Rating = 9,
             Title = "Best sourdough pizza and sours (#2)",
             Body = "Second time here this month! Sourdough crust with spicy salami and honey, paired with a mango sour slushie. Unbeatable vibes.",
@@ -677,10 +678,10 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000009-0000-0000-0000-000000000009"),
             UserId = u4Id, // Lukas
-            RestaurantId = r12.Id, // Noma
+            RestaurantId = r12.Id, // Alder & Ash
             Rating = 10,
-            Title = "Ocean season at Noma",
-            Body = "René Redzepi's team continues to redefine what food can be. Sea urchin tart with frozen fermented broth blew my mind.",
+            Title = "Ocean season at Alder & Ash",
+            Body = "The team keeps finding surprising ways to turn seasonal ingredients into something new. The sea-urchin dish with fermented broth was a highlight.",
             VisitNumber = 1,
             Visibility = ReviewVisibility.Public,
             PriceRangeIndicator = 4,
@@ -692,10 +693,10 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000010-0000-0000-0000-000000000010"),
             UserId = u8Id, // Freja
-            RestaurantId = r13.Id, // Bæst
+            RestaurantId = r13.Id, // Wild Fig Table
             Rating = 9,
             Title = "House-made mozzarella & organic charcuterie",
-            Body = "Christian Puglisi has created something so special in Nørrebro. Fresh burrata made an hour before serving!",
+            Body = "The house-made mozzarella and seasonal produce made this a memorable visit. Everything tasted fresh and carefully prepared.",
             VisitNumber = 1,
             Visibility = ReviewVisibility.Public,
             PriceRangeIndicator = 3,
@@ -707,9 +708,9 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000011-0000-0000-0000-000000000011"),
             UserId = u4Id, // Lukas
-            RestaurantId = r14.Id, // Popl Burger (NEW)
+            RestaurantId = r14.Id, // Little Fjord Burger (NEW)
             Rating = 9,
-            Title = "Noma burger spinoff lives up to the hype",
+            Title = "Alder & Ash burger spinoff lives up to the hype",
             Body = "The organic beef patty is seared to perfection with garum glaze. Fermented quinoa vegan burger is also ridiculously good.",
             VisitNumber = 1,
             Visibility = ReviewVisibility.Public,
@@ -722,10 +723,10 @@ public static class SeedData
         {
             Id = Guid.Parse("b0000012-0000-0000-0000-000000000012"),
             UserId = u2Id, // Erik
-            RestaurantId = r17.Id, // Lysverket
+            RestaurantId = r17.Id, // Cloudberry House
             Rating = 9,
             Title = "West coast seafood magic",
-            Body = "Raw marinated Norwegian scallops with apple and elderflower. Chef Christopher Haatuft showcases the very best of Bergen.",
+            Body = "The seasonal scallops with apple and elderflower were a highlight. A warm, thoughtful take on Bergen's food scene.",
             VisitNumber = 1,
             Visibility = ReviewVisibility.Public,
             PriceRangeIndicator = 3,
@@ -796,12 +797,12 @@ public static class SeedData
         // 10. WantToTry entries
         var wantToTry = new List<WantToTry>
         {
-            new WantToTry { UserId = u1Id, RestaurantId = r7.Id, CreatedAt = DateTime.UtcNow.AddDays(-3) }, // Anna wants Frantzen
-            new WantToTry { UserId = u1Id, RestaurantId = r12.Id, CreatedAt = DateTime.UtcNow.AddDays(-4) }, // Anna wants Noma
-            new WantToTry { UserId = u2Id, RestaurantId = r1.Id, CreatedAt = DateTime.UtcNow.AddDays(-2) }, // Erik wants Maaemo
-            new WantToTry { UserId = u3Id, RestaurantId = r3.Id, CreatedAt = DateTime.UtcNow.AddHours(-10) }, // Sofia wants Sabi Omakase
-            new WantToTry { UserId = u4Id, RestaurantId = r8.Id, CreatedAt = DateTime.UtcNow.AddDays(-1) }, // Lukas wants Omnipollo
-            new WantToTry { UserId = u6Id, RestaurantId = r3.Id, CreatedAt = DateTime.UtcNow.AddHours(-8) } // Ingrid wants Sabi Omakase
+            new WantToTry { UserId = u1Id, RestaurantId = r7.Id, CreatedAt = DateTime.UtcNow.AddDays(-3) }, // Anna wants Copper Lark
+            new WantToTry { UserId = u1Id, RestaurantId = r12.Id, CreatedAt = DateTime.UtcNow.AddDays(-4) }, // Anna wants Alder & Ash
+            new WantToTry { UserId = u2Id, RestaurantId = r1.Id, CreatedAt = DateTime.UtcNow.AddDays(-2) }, // Erik wants Rowan & Ember
+            new WantToTry { UserId = u3Id, RestaurantId = r3.Id, CreatedAt = DateTime.UtcNow.AddHours(-10) }, // Sofia wants Yuzu Vale
+            new WantToTry { UserId = u4Id, RestaurantId = r8.Id, CreatedAt = DateTime.UtcNow.AddDays(-1) }, // Lukas wants Sesame Orbit
+            new WantToTry { UserId = u6Id, RestaurantId = r3.Id, CreatedAt = DateTime.UtcNow.AddHours(-8) } // Ingrid wants Yuzu Vale
         };
         await context.WantToTryEntries.AddRangeAsync(wantToTry);
         await context.SaveChangesAsync();
@@ -816,7 +817,7 @@ public static class SeedData
                 ActorId = u2Id, // Erik
                 Type = NotificationType.Comment,
                 ReviewId = rev1.Id,
-                Message = "Erik Pedersen commented on your review of Maaemo",
+                Message = "Erik Pedersen commented on your review of Rowan & Ember",
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow.AddDays(-1)
             },
@@ -827,7 +828,7 @@ public static class SeedData
                 ActorId = u6Id, // Ingrid
                 Type = NotificationType.Like,
                 ReviewId = rev1.Id,
-                Message = "Ingrid Haugen liked your review of Maaemo",
+                Message = "Ingrid Haugen liked your review of Rowan & Ember",
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow.AddHours(-18)
             },
@@ -839,7 +840,7 @@ public static class SeedData
                 Type = NotificationType.NewReview,
                 ReviewId = rev11.Id,
                 RestaurantId = r14.Id,
-                Message = "Lukas Møller reviewed Popl Burger",
+                Message = "Lukas Møller reviewed Little Fjord Burger",
                 IsRead = true,
                 CreatedAt = DateTime.UtcNow.AddHours(-12)
             },
@@ -850,7 +851,7 @@ public static class SeedData
                 ActorId = u3Id, // Sofia
                 Type = NotificationType.WantToTry,
                 RestaurantId = r3.Id,
-                Message = "Sofia Lindqvist wants to try Sabi Omakase Oslo",
+                Message = "Sofia Lindqvist wants to try Yuzu Vale",
                 IsRead = true,
                 CreatedAt = DateTime.UtcNow.AddHours(-10)
             }
@@ -874,7 +875,7 @@ public static class SeedData
             {
                 Id = Guid.NewGuid(),
                 MunicipalityId = 1,
-                RestaurantId = r3.Id, // Sabi Omakase
+                RestaurantId = r3.Id, // Yuzu Vale
                 Score = 0.88,
                 Rank = 2,
                 CalculatedAt = DateTime.UtcNow
@@ -929,5 +930,41 @@ public static class SeedData
         await context.SaveChangesAsync();
 
         await RestaurantDirectorySeedData.EnsureAsync(context);
+    }
+
+    private static async Task UpdateDemoRestaurantNamesAsync(FoodieFriendsDbContext context)
+    {
+        var demoNames = new Dictionary<Guid, string>
+        {
+            [Guid.Parse("a0000001-0000-0000-0000-000000000001")] = "Rowan & Ember",
+            [Guid.Parse("a0000002-0000-0000-0000-000000000002")] = "Tallow & Thyme",
+            [Guid.Parse("a0000003-0000-0000-0000-000000000003")] = "Yuzu Vale",
+            [Guid.Parse("a0000004-0000-0000-0000-000000000004")] = "Hearthside Drift",
+            [Guid.Parse("a0000005-0000-0000-0000-000000000005")] = "Brine & Birch",
+            [Guid.Parse("a0000006-0000-0000-0000-000000000006")] = "Juniper Fold",
+            [Guid.Parse("a0000007-0000-0000-0000-000000000007")] = "Copper Lark",
+            [Guid.Parse("a0000008-0000-0000-0000-000000000008")] = "Sesame Orbit",
+            [Guid.Parse("a0000009-0000-0000-0000-000000000009")] = "Sora Table",
+            [Guid.Parse("a0000010-0000-0000-0000-000000000010")] = "Mallow & Rye",
+            [Guid.Parse("a0000011-0000-0000-0000-000000000011")] = "Fern Lantern",
+            [Guid.Parse("a0000012-0000-0000-0000-000000000012")] = "Alder & Ash",
+            [Guid.Parse("a0000013-0000-0000-0000-000000000013")] = "Wild Fig Table",
+            [Guid.Parse("a0000014-0000-0000-0000-000000000014")] = "Little Fjord Burger",
+            [Guid.Parse("a0000015-0000-0000-0000-000000000015")] = "Nori Lantern",
+            [Guid.Parse("a0000016-0000-0000-0000-000000000016")] = "Cinder & Cumin",
+            [Guid.Parse("a0000017-0000-0000-0000-000000000017")] = "Cloudberry House",
+            [Guid.Parse("a0000018-0000-0000-0000-000000000018")] = "Amber Fern",
+            [Guid.Parse("a0000019-0000-0000-0000-000000000019")] = "Northglass Kitchen"
+        };
+
+        var restaurants = await context.Restaurants
+            .Where(restaurant => demoNames.Keys.Contains(restaurant.Id))
+            .ToListAsync();
+        foreach (var restaurant in restaurants)
+        {
+            restaurant.Name = demoNames[restaurant.Id];
+            restaurant.Address = "Fictional demo location";
+            restaurant.WebsiteUrl = null;
+        }
     }
 }
